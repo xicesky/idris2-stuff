@@ -1,4 +1,16 @@
 # Ignore common IDE and editor files
+*.swp
+*.swo
+*.log
+*.DS_Store
+.idea
+*.iml
+.project
+.classpath
+.settings
+
+# Ignore _local directory
+_local
 
 # Ignore build directories
 build
