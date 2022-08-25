@@ -1,0 +1,6 @@
+# Ignore common IDE and editor files
+
+# Ignore build directories
+build
+target
+
