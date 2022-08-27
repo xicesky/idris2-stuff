@@ -1,0 +1,37 @@
+package java-support
+
+authors     = "Markus Dangl"
+brief       = "java definitions for code generation"
+version     = 0.0.1
+
+-- the Idris2 version required (e.g. langversion >= 0.5.1)
+--langversion >= 0.5.1
+
+-- license = MIT
+-- readme =
+-- homepage =
+-- sourceloc =
+-- bugtracker =
+
+-- "maven-like" layout
+sourcedir   = "src/main/idris2"
+builddir    = "target"
+outputdir   = "target"
+
+depends = base          >= 0.5.1
+        , contrib       >= 0.5.1
+        , elab-util     >= 0.5.0
+        , sop           >= 0.5.0
+        , prettier      >= 0
+
+modules = Language.Java.AST.Types
+        , Language.Java.AST.Expression
+        , Language.Java.AST.Shorthand
+        , Language.Java.Pretty
+
+-- main file (i.e. file to load at REPL)
+main = Main
+
+-- name of executable
+executable  = java-support
+-- opts =
