@@ -21,5 +21,26 @@
 				"meraymond.idris-vscode"
 			]
 		}
-	}
+	},
+    "settings": {
+        "terminal.integrated.copyOnSelection": true,
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {
+            "bash": {
+                "path": "bash",
+                "icon": "terminal-bash"
+            },
+            "zsh": {
+                "path": "zsh"
+            },
+            "tmux": {
+                "path": "tmux",
+                "icon": "terminal-tmux"
+            },
+            "pwsh": {
+                "path": "pwsh",
+                "icon": "terminal-powershell"
+            }
+        }
+    }
 }
