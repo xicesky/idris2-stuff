@@ -1,4 +1,17 @@
 #!/bin/bash
 
-[ -d "idris2-elab-util" ] || git clone -b v0.5.0 "git@github.com:stefan-hoeck/idris2-elab-util"
-[ -d "idris2-sop" ] || git clone -b v0.5.0 "git@github.com:stefan-hoeck/idris2-sop"
+git-dependency() {
+    declare dir="$1"; shift
+    declare gituri="$1"; shift
+    declare branch="$1"; shift
+
+    # Clone or switch branch
+    if [ -d "$dir" ] ; then (
+        cd "$dir"
+        git checkout "$branch" || return $?
+    ) else
+        git clone -b "$branch" "$gituri" "$dir" || return $?
+    fi
+}
+
+source dependencies.source.sh
