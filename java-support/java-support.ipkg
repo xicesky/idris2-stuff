@@ -28,6 +28,7 @@ modules = Language.Java.AST.Types
         , Language.Java.AST.Expression
         , Language.Java.AST.Shorthand
         , Language.Java.Pretty
+        , Repl
 
 -- main file (i.e. file to load at REPL)
 main = Main

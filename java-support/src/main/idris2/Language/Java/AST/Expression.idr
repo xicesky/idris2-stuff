@@ -158,7 +158,7 @@ data Exp : Type where
     JA_Lit : Literal -> Exp
     ||| A class literal, which is an expression consisting of the name of a class, interface, array,
     ||| or primitive type, or the pseudo-type void (modelled by 'Nothing'), followed by a `.' and the token class.
-    JA_ClassLit : Maybe Type -> Exp
+    JA_ClassLit : Maybe JavaType -> Exp
     ||| The keyword @this@ denotes a value that is a reference to the object for which the instance method
     ||| was invoked, or to the object being constructed.
     JA_This : Exp
@@ -174,10 +174,10 @@ data Exp : Type where
     JA_QualInstanceCreation : Exp -> (List TypeArgument) -> Ident -> (List Argument) -> (Maybe ClassBody) -> Exp
     ||| An array instance creation expression is used to create new arrays. The last argument denotes the number
     ||| of dimensions that have no explicit length given. These dimensions must be given last.
-    JA_ArrayCreate : Type -> (List Exp) -> Int -> Exp
+    JA_ArrayCreate : JavaType -> (List Exp) -> Int -> Exp
     ||| An array instance creation expression may come with an explicit initializer. Such expressions may not
     ||| be given explicit lengths for any of its dimensions.
-    JA_ArrayCreateInit : Type -> Int -> ArrayInit -> Exp
+    JA_ArrayCreateInit : JavaType -> Int -> ArrayInit -> Exp
     ||| A field access expression.
     JA_FieldAccess : FieldAccess -> Exp
     ||| A method invocation expression.
@@ -206,7 +206,7 @@ data Exp : Type where
     ||| numeric type; or confirms, at compile time, that the type of an expression is boolean; or checks,
     ||| at run time, that a reference value refers to an object whose class is compatible with a specified
     ||| reference type.
-    JA_Cast : Type -> Exp -> Exp
+    JA_Cast : JavaType -> Exp -> Exp
     ||| The application of a binary operator to two operand expressions.
     JA_BinOp : Exp -> Op -> Exp -> Exp
     ||| Testing whether the result of an expression is an instance of some reference type.
@@ -345,7 +345,7 @@ data ConstructorBody = JA_ConstructorBody (Maybe ExplConstrInv) (List BlockStmt)
 public export
 data MemberDecl : Type where
     ||| The variables of a class type are introduced by field declarations.
-    JA_FieldDecl : (List Modifier) -> Type -> (List VarDecl) -> MemberDecl
+    JA_FieldDecl : (List Modifier) -> JavaType -> (List VarDecl) -> MemberDecl  -- FIXME List1 ?
     ||| A method declares executable code that can be invoked, passing a fixed number of values as arguments.
     JA_MethodDecl :      (List Modifier) -> (List TypeParam) -> (Maybe Type) -> Ident -> (List FormalParam) -> (List ExceptionType) -> (Maybe Exp) -> MethodBody -> MemberDecl
     ||| A constructor is used in the creation of an object that is an instance of a class.
@@ -442,7 +442,7 @@ data Stmt : Type where
     ||| update code repeatedly until the value of the expression is false.
     JA_BasicFor : (Maybe ForInit) -> (Maybe Exp) -> (Maybe (List Exp)) -> Stmt -> Stmt
     ||| The enhanced @for@ statement iterates over an array or a value of a class that implements the @iterator@ interface.
-    JA_EnhancedFor : (List Modifier) -> Type -> Ident -> Exp -> Stmt -> Stmt
+    JA_EnhancedFor : (List Modifier) -> JavaType -> Ident -> Exp -> Stmt -> Stmt
     ||| An empty statement does nothing.
     JA_Empty : Stmt
     ||| Certain kinds of expressions may be used as statements by following them with semicolons:
