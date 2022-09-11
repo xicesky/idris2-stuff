@@ -75,9 +75,25 @@ Pretty JavaType where
 ------------------------------------------------------------------------------------------------------------------------
 
 -- FIXME: I'd like forward declarations for instances...
--- Pretty Decl
 -- ... instead we have to make this mutual...
 mutual
+
+Pretty Modifier where
+    pretty JA_Public        = "public"
+    pretty JA_Private       = "private"
+    pretty JA_Protected     = "protected"
+    pretty JA_Abstract      = "abstract"
+    pretty JA_Final         = "final"
+    pretty JA_Static        = "static"
+    pretty JA_StrictFP      = "strictfp"
+    pretty JA_Transient     = "transient"
+    pretty JA_Volatile      = "volatile"
+    pretty JA_Native        = "native"
+    pretty (JA_Annotation an) = pretty an
+    pretty JA_Synchronized_ = "synchronized"
+
+Pretty (List Modifier) where
+    pretty = hsepBy " " . map pretty
 
 Pretty PackageDecl where
     pretty (JA_PackageDecl name) = "package" `hsep` (pretty name)
@@ -91,7 +107,7 @@ Pretty ClassBody where
 
 Pretty ClassDecl where
     pretty (JA_ClassDecl modifiers ident typeParams extendsT implementsTs classBody) = jbraces
-        (sep [{- FIXME modifiers, -} "class", pretty ident {- , FIXME tp,ext,impl -}])
+        (sep [pretty modifiers, "class", pretty ident {- , FIXME tp,ext,impl -}])
         (pretty classBody)
     pretty (JA_EnumDecl  modifiers ident                     implementsTs enumBody) = todo "JA_EnumDecl"
 
@@ -122,7 +138,7 @@ Pretty VarDecl where
 
 Pretty MemberDecl where
     -- JA_FieldDecl : (List Modifier) -> JavaType -> (List VarDecl) -> MemberDecl
-    pretty (JA_FieldDecl modifiers typ vardecl) = sep [todo "modifiers", pretty typ, hsepBy ", " $ map pretty vardecl] <+> ";"
+    pretty (JA_FieldDecl modifiers typ vardecl) = sep [pretty modifiers, pretty typ, hsepBy ", " $ map pretty vardecl] <+> ";"
     -- JA_MethodDecl :      (List Modifier) -> (List TypeParam) -> (Maybe Type) -> Ident -> (List FormalParam) -> (List ExceptionType) -> (Maybe Exp) -> MethodBody -> MemberDecl
     pretty (JA_MethodDecl _ _ _ _ _ _ _ _) = todo "JA_MethodDecl"
     -- JA_ConstructorDecl : (List Modifier) -> (List TypeParam)                 -> Ident -> (List FormalParam) -> (List ExceptionType) -> ConstructorBody -> MemberDecl
@@ -137,6 +153,22 @@ Pretty Decl where
     pretty (JA_MemberDecl memberDecl) = pretty memberDecl
     -- | JA_InitDecl Bool Block
     pretty (JA_InitDecl fixme block) = todo "JA_InitDecl"
+
+------------------------------------------------------------------------------------------------------------------------
+
+Pretty NormalAnnotation where
+    pretty _ = todo "NormalAnnotation"
+
+Pretty SingleElementAnnotation where
+    pretty _ = todo "SingleElementAnnotation"
+
+Pretty MarkerAnnotation where
+    pretty (MkMarkerAnnotation name) = "@" <+> pretty name
+
+Pretty Annotation where
+    pretty (JA_NormalAnnotation x)          = pretty x
+    pretty (JA_SingleElementAnnotation x)   = pretty x
+    pretty (JA_MarkerAnnotation x)          = pretty x
 
 ------------------------------------------------------------------------------------------------------------------------
 

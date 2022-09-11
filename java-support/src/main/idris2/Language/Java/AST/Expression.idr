@@ -361,16 +361,19 @@ data ElementValue
     = JA_EVVal VarInit
     | JA_EVAnn Annotation
 
+public export
 record NormalAnnotation where
     constructor MkNormalAnnotation
     annName : Name -- Not type because not type generics not allowed
     annKV   : (List (Ident, ElementValue))
 
+public export
 record SingleElementAnnotation where
     constructor MkSingleElementAnnotation
     annName : Name
     annValue: ElementValue
 
+public export
 record MarkerAnnotation where
     constructor MkMarkerAnnotation
     annName : Name

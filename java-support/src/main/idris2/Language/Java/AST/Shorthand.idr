@@ -40,6 +40,10 @@ java_name : List String -> Name
 java_name = JA_Name . map JA_Ident
 
 export
+generated_modifier : Modifier
+generated_modifier = JA_Annotation $ JA_MarkerAnnotation $ MkMarkerAnnotation $ java_name ["net", "q1cc", "sky", "Generated"]
+
+export
 java_class : FqClassName Ident -> ClassBody -> CompilationUnit
 java_class fqn classBody = let
     -- packageName : List Ident
@@ -47,5 +51,5 @@ java_class fqn classBody = let
     MkFqClassName packageName className = fqn
     in JA_CompilationUnit
         (Just $ JA_PackageDecl $ JA_Name packageName)
-        []  -- FIXME
-        [JA_ClassTypeDecl $ JA_ClassDecl [] className [] Nothing [] classBody]
+        []  -- FIXME imports
+        [JA_ClassTypeDecl $ JA_ClassDecl [generated_modifier, JA_Public] className [] Nothing [] classBody]
