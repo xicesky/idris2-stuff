@@ -1,4 +1,4 @@
-FROM ghcr.io/xicesky/idris2-devcontainer:v0.5.1-ubuntu-20.04
+FROM ghcr.io/xicesky/idris2-devcontainer:v0.6.0-ubuntu-22.04
 
 RUN yes | unminimize
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \

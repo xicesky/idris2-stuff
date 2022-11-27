@@ -8,6 +8,7 @@ git-dependency() {
     # Clone or switch branch
     if [ -d "$dir" ] ; then (
         cd "$dir"
+        #git pull
         git checkout "$branch" || return $?
     ) else
         git clone -b "$branch" "$gituri" "$dir" || return $?

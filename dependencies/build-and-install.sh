@@ -26,9 +26,26 @@ source dependencies.source.sh
 # }
 
 # Build and install
+declare -a FAILED_IPKGS=()
 for ipkg in "${DEPENDENCY_IPKGS[@]}" ; do
     printf "%-38s: %s\n" "Building" "$ipkg"
-    idris2 --build "$ipkg"
-    printf "%-38s: %s\n" "Installing (sudo)" "$ipkg"
-    sudo idris2 --install "$ipkg"
+    idris2 --build "$ipkg"; rc=$?
+    if [[ "$rc" -ne 0 ]]; then
+        FAILED_IPKGS+=( "$ipkg" )
+    else
+        printf "%-38s: %s\n" "Installing (sudo)" "$ipkg"
+        sudo idris2 --install "$ipkg"; rc=$?
+        if [[ "$rc" -ne 0 ]]; then
+            FAILED_IPKGS+=( "$ipkg" )
+        fi
+    fi
 done
+
+echo "-------------------------------------------------------------------------------"
+if [[ "${#FAILED_IPKGS[@]}" -gt 0 ]]; then
+    echo "Some packages failed to build:"
+    for i in "${FAILED_IPKGS[@]}" ; do
+        echo " * $i"
+    done
+    exit 1
+fi
