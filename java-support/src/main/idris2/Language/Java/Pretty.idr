@@ -52,13 +52,13 @@ todo s = fromString $ "/* TODO: " ++ s ++ " */"
 ------------------------------------------------------------------------------------------------------------------------
 -- Pretty-print stuff from Language.Java.AST.Types
 
-Pretty Ident where
+implementation Pretty Ident where
     pretty (JA_Ident s) = fromString s
 
-Pretty Name where
+implementation Pretty Name where
     pretty (JA_Name idents) = hsepBy "." (map pretty idents)
 
-Pretty PrimType where
+implementation Pretty PrimType where
     pretty JA_BooleanT = fromString "boolean"
     pretty JA_ByteT = fromString "byte"
     pretty JA_ShortT = fromString "short"
@@ -68,17 +68,16 @@ Pretty PrimType where
     pretty JA_FloatT = fromString "float"
     pretty JA_DoubleT = fromString "double"
 
-Pretty JavaType where
+implementation Pretty JavaType where
     pretty (JA_PrimType t) = pretty t
     pretty (JA_RefType refT) = todo "JA_RefType"
 
 ------------------------------------------------------------------------------------------------------------------------
 
--- FIXME: I'd like forward declarations for instances...
--- ... instead we have to make this mutual...
-mutual
+implementation Pretty Annotation
+implementation Pretty Decl
 
-Pretty Modifier where
+implementation Pretty Modifier where
     pretty JA_Public        = "public"
     pretty JA_Private       = "private"
     pretty JA_Protected     = "protected"
@@ -92,30 +91,30 @@ Pretty Modifier where
     pretty (JA_Annotation an) = pretty an
     pretty JA_Synchronized_ = "synchronized"
 
-Pretty (List Modifier) where
+implementation Pretty (List Modifier) where
     pretty = hsepBy " " . map pretty
 
-Pretty PackageDecl where
+implementation Pretty PackageDecl where
     pretty (JA_PackageDecl name) = "package" `hsep` (pretty name)
 
-Pretty InterfaceDecl where
+implementation Pretty InterfaceDecl where
     -- JA_InterfaceDecl InterfaceKind (List Modifier) Ident (List TypeParam) (List RefType) InterfaceBody
     pretty (JA_InterfaceDecl _ _ _ _ _ _) = todo "InterfaceDecl"
 
-Pretty ClassBody where
+implementation Pretty ClassBody where
     pretty (JA_ClassBody decls) = vcatList $ map pretty decls
 
-Pretty ClassDecl where
+implementation Pretty ClassDecl where
     pretty (JA_ClassDecl modifiers ident typeParams extendsT implementsTs classBody) = jbraces
         (sep [pretty modifiers, "class", pretty ident {- , FIXME tp,ext,impl -}])
         (pretty classBody)
     pretty (JA_EnumDecl  modifiers ident                     implementsTs enumBody) = todo "JA_EnumDecl"
 
-Pretty TypeDecl where
+implementation Pretty TypeDecl where
     pretty (JA_ClassTypeDecl c) = pretty c
     pretty (JA_InterfaceTypeDecl i) = pretty i
 
-Pretty CompilationUnit where
+implementation Pretty CompilationUnit where
     pretty (JA_CompilationUnit packagedecl importdecls typedecls) = vsepBy empty
         [ fromMaybe empty (map pretty packagedecl)
         -- , FIXME importdecls
@@ -125,18 +124,18 @@ Pretty CompilationUnit where
 ------------------------------------------------------------------------------------------------------------------------
 -- Decl
 
-Pretty VarDeclId where
+implementation Pretty VarDeclId where
     pretty (JA_VarId ident) = pretty ident
     pretty (JA_VarDeclArray vdi) = pretty vdi <+> "[]"
 
-Pretty VarInit where
+implementation Pretty VarInit where
     pretty (JA_InitExp exp) = todo "JA_InitExp"
     pretty (JA_InitArray arrInit) = todo "JA_InitArray"
 
-Pretty VarDecl where
+implementation Pretty VarDecl where
     pretty (JA_VarDecl varDeclId maybeInit) = sep [pretty varDeclId, fromMaybe "" (map pretty maybeInit)]
 
-Pretty MemberDecl where
+implementation Pretty MemberDecl where
     -- JA_FieldDecl : (List Modifier) -> JavaType -> (List VarDecl) -> MemberDecl
     pretty (JA_FieldDecl modifiers typ vardecl) = sep [pretty modifiers, pretty typ, hsepBy ", " $ map pretty vardecl] <+> ";"
     -- JA_MethodDecl :      (List Modifier) -> (List TypeParam) -> (Maybe Type) -> Ident -> (List FormalParam) -> (List ExceptionType) -> (Maybe Exp) -> MethodBody -> MemberDecl
@@ -148,7 +147,7 @@ Pretty MemberDecl where
     -- JA_MemberInterfaceDecl : InterfaceDecl -> MemberDecl
     pretty (JA_MemberInterfaceDecl _) = todo "JA_MemberInterfaceDecl"
 
-Pretty Decl where
+implementation Pretty Decl where
     -- = JA_MemberDecl MemberDecl
     pretty (JA_MemberDecl memberDecl) = pretty memberDecl
     -- | JA_InitDecl Bool Block
@@ -156,16 +155,16 @@ Pretty Decl where
 
 ------------------------------------------------------------------------------------------------------------------------
 
-Pretty NormalAnnotation where
+implementation Pretty NormalAnnotation where
     pretty _ = todo "NormalAnnotation"
 
-Pretty SingleElementAnnotation where
+implementation Pretty SingleElementAnnotation where
     pretty _ = todo "SingleElementAnnotation"
 
-Pretty MarkerAnnotation where
+implementation Pretty MarkerAnnotation where
     pretty (MkMarkerAnnotation name) = "@" <+> pretty name
 
-Pretty Annotation where
+implementation Pretty Annotation where
     pretty (JA_NormalAnnotation x)          = pretty x
     pretty (JA_SingleElementAnnotation x)   = pretty x
     pretty (JA_MarkerAnnotation x)          = pretty x
@@ -186,7 +185,7 @@ prettyPrint cu = putStrLn $ fromMaybe "ERROR" $ Doc.render defaultOpts $ pretty 
 -- render : (opts : _) -> Doc opts -> Maybe String
 -- render opts (MkDoc xs) = map render $ shortest $ filter (visible opts) xs
 
-Pretty String where
+implementation Pretty String where
     pretty = text
 
 export
