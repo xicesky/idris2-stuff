@@ -7,14 +7,6 @@
 :star: *
 Markus Dangl <663399+xicesky@users.noreply.github.com>
 
-== Build docker images
-
-[source,bash]
-----
-( cd idris2-docker-images/00-base && ./build.sh; )
-( cd idris2-docker-images/10-idris2 && ./build.sh; )
-----
-
 == Launch in devcontainer
 
 See https://github.com/microsoft/vscode-dev-containers
