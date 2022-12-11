@@ -1,8 +1,8 @@
-package java-support
+package example-module
 
 authors     = "Markus Dangl"
-brief       = "java definitions for code generation"
-version     = 0.0.2
+brief       = "Template for new idris2 library modules"
+version     = 0.0.1
 
 -- the Idris2 version required (e.g. langversion >= 0.5.1)
 langversion >= 0.6.0
@@ -20,19 +20,12 @@ outputdir   = "target"
 
 depends = base          >= 0.6.0
         , contrib       >= 0.6.0
-        , elab-util     >= 0.6.0
-        , sop           >= 0.6.0
-        , prettier      >= 0
 
-modules = Language.Java.AST.Types
-        , Language.Java.AST.Expression
-        , Language.Java.AST.Shorthand
-        , Language.Java.Pretty
-        , Repl
+modules = Repl
 
 -- main file (i.e. file to load at REPL)
 main = Main
 
 -- name of executable
-executable  = java-support
+executable  = example-module
 -- opts =

@@ -1,0 +1,17 @@
+= example-module
+:source-highlighter: rouge
+:source-language: shell
+:icons: font
+:toc: left
+:sectanchors:
+:star: *
+Markus Dangl <663399+xicesky@users.noreply.github.com>
+
+Template for new idris2 library modules
+
+== build
+
+[source,bash]
+----
+idris2 --build example-module.ipkg
+----
