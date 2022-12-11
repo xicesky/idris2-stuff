@@ -1,0 +1,15 @@
+= java-backend
+:source-highlighter: rouge
+:source-language: shell
+:icons: font
+:toc: left
+:sectanchors:
+:star: *
+Markus Dangl <663399+xicesky@users.noreply.github.com>
+
+== build
+
+[source,bash]
+----
+idris2 --build java-backend.ipkg
+----

@@ -1,0 +1,1 @@
+../example-module/install.sh

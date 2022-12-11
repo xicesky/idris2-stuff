@@ -1,0 +1,33 @@
+package java-backend
+
+authors     = "Markus Dangl"
+brief       = "java code generation for idris2"
+version     = 0.0.1
+
+-- the Idris2 version required (e.g. langversion >= 0.5.1)
+langversion >= 0.6.0
+
+-- license = MIT
+-- readme =
+-- homepage =
+-- sourceloc =
+-- bugtracker =
+
+-- "maven-like" layout
+sourcedir   = "src/main/idris2"
+builddir    = "target"
+outputdir   = "target"
+
+depends = base          >= 0.6.0
+        , idris2        >= 0.6.0
+        , contrib       >= 0.6.0
+        , network       >= 0.6.0
+
+modules = Repl
+
+-- main file (i.e. file to load at REPL)
+main = Main
+
+-- name of executable
+executable  = java-backend
+-- opts =
