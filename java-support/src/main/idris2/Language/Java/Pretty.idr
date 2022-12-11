@@ -103,7 +103,7 @@ prettyModifiers _ modifiers = let
         annotations = filter isAnnotation modifiers
         nonAnnotations : List Modifier
         nonAnnotations = filter (not . isAnnotation) modifiers
-    in vcat (hsepBy " " $ map pretty annotations) (hsepBy " " $ map pretty nonAnnotations)
+    in vcat (vcatList $ map pretty annotations) (hsepBy " " $ map pretty nonAnnotations)
 
 implementation Pretty PackageDecl where
     prettyPrec _ (JA_PackageDecl name) = "package" `hsep` ((prettyPrec App) name)

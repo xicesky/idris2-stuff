@@ -44,6 +44,10 @@ generated_modifier : Modifier
 generated_modifier = JA_Annotation $ JA_MarkerAnnotation $ MkMarkerAnnotation $ java_name ["net", "q1cc", "sky", "Generated"]
 
 export
+immutable_modifier : Modifier
+immutable_modifier = JA_Annotation $ JA_MarkerAnnotation $ MkMarkerAnnotation $ java_name ["net", "q1cc", "sky", "Immutable"]
+
+export
 java_class : FqClassName Ident -> ClassBody -> CompilationUnit
 java_class fqn classBody = let
     -- packageName : List Ident
@@ -52,4 +56,4 @@ java_class fqn classBody = let
     in JA_CompilationUnit
         (Just $ JA_PackageDecl $ JA_Name packageName)
         []  -- FIXME imports
-        [JA_ClassTypeDecl $ JA_ClassDecl [generated_modifier, JA_Public] className [] Nothing [] classBody]
+        [JA_ClassTypeDecl $ JA_ClassDecl [generated_modifier, JA_Public, immutable_modifier] className [] Nothing [] classBody]
