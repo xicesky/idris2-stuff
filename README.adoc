@@ -12,3 +12,26 @@ Markus Dangl <663399+xicesky@users.noreply.github.com>
 See https://github.com/microsoft/vscode-dev-containers
 
 FIXME: image:https://img.shields.io/static/v1?label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode[link=https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/microsoft/vscode-remote-try-python,title="Open in Remote - Containers"]
+
+== Checkout and build dependencies
+
+This project uses the following library dependencies:
+
+* https://github.com/stefan-hoeck/idris2-elab-util
+* https://github.com/stefan-hoeck/idris2-sop
+* https://github.com/Z-snails/prettier
+
+Since we don't have any dependecy-management yet, they are currently managed via shell script:
+
+[source,bash]
+----
+pushd dependencies && ./checkout.sh && ./build-and-install.sh && popd
+----
+
+== Run main
+
+[source,bash]
+----
+cd java-support
+./run.sh
+----
