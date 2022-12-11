@@ -53,24 +53,24 @@ todo s = fromString $ "/* TODO: " ++ s ++ " */"
 -- Pretty-print stuff from Language.Java.AST.Types
 
 implementation Pretty Ident where
-    pretty (JA_Ident s) = fromString s
+    prettyPrec _ (JA_Ident s) = fromString s
 
 implementation Pretty Name where
-    pretty (JA_Name idents) = hsepBy "." (map pretty idents)
+    prettyPrec _ (JA_Name idents) = hsepBy "." (map (prettyPrec App) idents)
 
 implementation Pretty PrimType where
-    pretty JA_BooleanT = fromString "boolean"
-    pretty JA_ByteT = fromString "byte"
-    pretty JA_ShortT = fromString "short"
-    pretty JA_IntT = fromString "int"
-    pretty JA_LongT = fromString "long"
-    pretty JA_CharT = fromString "char"
-    pretty JA_FloatT = fromString "float"
-    pretty JA_DoubleT = fromString "double"
+    prettyPrec _ JA_BooleanT = fromString "boolean"
+    prettyPrec _ JA_ByteT = fromString "byte"
+    prettyPrec _ JA_ShortT = fromString "short"
+    prettyPrec _ JA_IntT = fromString "int"
+    prettyPrec _ JA_LongT = fromString "long"
+    prettyPrec _ JA_CharT = fromString "char"
+    prettyPrec _ JA_FloatT = fromString "float"
+    prettyPrec _ JA_DoubleT = fromString "double"
 
 implementation Pretty JavaType where
-    pretty (JA_PrimType t) = pretty t
-    pretty (JA_RefType refT) = todo "JA_RefType"
+    prettyPrec _ (JA_PrimType t) = prettyPrec App t
+    prettyPrec _ (JA_RefType refT) = todo "JA_RefType"
 
 ------------------------------------------------------------------------------------------------------------------------
 
@@ -78,96 +78,107 @@ implementation Pretty Annotation
 implementation Pretty Decl
 
 implementation Pretty Modifier where
-    pretty JA_Public        = "public"
-    pretty JA_Private       = "private"
-    pretty JA_Protected     = "protected"
-    pretty JA_Abstract      = "abstract"
-    pretty JA_Final         = "final"
-    pretty JA_Static        = "static"
-    pretty JA_StrictFP      = "strictfp"
-    pretty JA_Transient     = "transient"
-    pretty JA_Volatile      = "volatile"
-    pretty JA_Native        = "native"
-    pretty (JA_Annotation an) = pretty an
-    pretty JA_Synchronized_ = "synchronized"
+    prettyPrec _ JA_Public        = "public"
+    prettyPrec _ JA_Private       = "private"
+    prettyPrec _ JA_Protected     = "protected"
+    prettyPrec _ JA_Abstract      = "abstract"
+    prettyPrec _ JA_Final         = "final"
+    prettyPrec _ JA_Static        = "static"
+    prettyPrec _ JA_StrictFP      = "strictfp"
+    prettyPrec _ JA_Transient     = "transient"
+    prettyPrec _ JA_Volatile      = "volatile"
+    prettyPrec _ JA_Native        = "native"
+    prettyPrec _ (JA_Annotation an) = prettyPrec App an
+    prettyPrec _ JA_Synchronized_ = "synchronized"
 
-implementation Pretty (List Modifier) where
-    pretty = hsepBy " " . map pretty
+isAnnotation : Modifier -> Bool
+isAnnotation (JA_Annotation _)  = True
+isAnnotation _                  = False
+
+prettyModifiers : {opts : _} -> Prec -> List Modifier -> Doc opts
+--prettyModifiers _ = hsepBy " " . map pretty
+-- FIXME is the order of modifiers important?? I don't think so
+prettyModifiers _ modifiers = let
+        annotations : List Modifier
+        annotations = filter isAnnotation modifiers
+        nonAnnotations : List Modifier
+        nonAnnotations = filter (not . isAnnotation) modifiers
+    in vcat (hsepBy " " $ map pretty annotations) (hsepBy " " $ map pretty nonAnnotations)
 
 implementation Pretty PackageDecl where
-    pretty (JA_PackageDecl name) = "package" `hsep` (pretty name)
+    prettyPrec _ (JA_PackageDecl name) = "package" `hsep` ((prettyPrec App) name)
 
 implementation Pretty InterfaceDecl where
     -- JA_InterfaceDecl InterfaceKind (List Modifier) Ident (List TypeParam) (List RefType) InterfaceBody
-    pretty (JA_InterfaceDecl _ _ _ _ _ _) = todo "InterfaceDecl"
+    prettyPrec _ (JA_InterfaceDecl _ _ _ _ _ _) = todo "InterfaceDecl"
 
 implementation Pretty ClassBody where
-    pretty (JA_ClassBody decls) = vcatList $ map pretty decls
+    prettyPrec _ (JA_ClassBody decls) = vcatList $ map (prettyPrec App) decls
 
 implementation Pretty ClassDecl where
-    pretty (JA_ClassDecl modifiers ident typeParams extendsT implementsTs classBody) = jbraces
-        (sep [pretty modifiers, "class", pretty ident {- , FIXME tp,ext,impl -}])
-        (pretty classBody)
-    pretty (JA_EnumDecl  modifiers ident                     implementsTs enumBody) = todo "JA_EnumDecl"
+    prettyPrec _ (JA_ClassDecl modifiers ident typeParams extendsT implementsTs classBody) = jbraces
+        (sep [prettyModifiers App modifiers, "class", prettyPrec App ident {- , FIXME tp,ext,impl -}])
+        (prettyPrec App classBody)
+    prettyPrec _ (JA_EnumDecl  modifiers ident                     implementsTs enumBody) = todo "JA_EnumDecl"
 
 implementation Pretty TypeDecl where
-    pretty (JA_ClassTypeDecl c) = pretty c
-    pretty (JA_InterfaceTypeDecl i) = pretty i
+    prettyPrec _ (JA_ClassTypeDecl c) = prettyPrec App c
+    prettyPrec _ (JA_InterfaceTypeDecl i) = prettyPrec App i
 
 implementation Pretty CompilationUnit where
-    pretty (JA_CompilationUnit packagedecl importdecls typedecls) = vsepBy empty
-        [ fromMaybe empty (map pretty packagedecl)
+    prettyPrec _ (JA_CompilationUnit packagedecl importdecls typedecls) = vsepBy empty
+        [ fromMaybe empty (map (prettyPrec App) packagedecl)
         -- , FIXME importdecls
-        , vsepBy empty (map pretty typedecls) --indentDefault $ vsepBy empty [fromString "impl"]
+        , vsepBy empty (map (prettyPrec App) typedecls) --indentDefault $ vsepBy empty [fromString "impl"]
         ]
 
 ------------------------------------------------------------------------------------------------------------------------
 -- Decl
 
 implementation Pretty VarDeclId where
-    pretty (JA_VarId ident) = pretty ident
-    pretty (JA_VarDeclArray vdi) = pretty vdi <+> "[]"
+    prettyPrec _ (JA_VarId ident) = prettyPrec App ident
+    prettyPrec _ (JA_VarDeclArray vdi) = prettyPrec App vdi <+> "[]"
 
 implementation Pretty VarInit where
-    pretty (JA_InitExp exp) = todo "JA_InitExp"
-    pretty (JA_InitArray arrInit) = todo "JA_InitArray"
+    prettyPrec _ (JA_InitExp exp) = todo "JA_InitExp"
+    prettyPrec _ (JA_InitArray arrInit) = todo "JA_InitArray"
 
 implementation Pretty VarDecl where
-    pretty (JA_VarDecl varDeclId maybeInit) = sep [pretty varDeclId, fromMaybe "" (map pretty maybeInit)]
+    prettyPrec _ (JA_VarDecl varDeclId maybeInit) = sep [prettyPrec App varDeclId, fromMaybe "" (map (prettyPrec App) maybeInit)]
 
 implementation Pretty MemberDecl where
     -- JA_FieldDecl : (List Modifier) -> JavaType -> (List VarDecl) -> MemberDecl
-    pretty (JA_FieldDecl modifiers typ vardecl) = sep [pretty modifiers, pretty typ, hsepBy ", " $ map pretty vardecl] <+> ";"
+    prettyPrec _ (JA_FieldDecl modifiers typ vardecl) = sep [prettyModifiers App modifiers, prettyPrec App typ, hsepBy ", " $ map (prettyPrec App) vardecl] <+> ";"
     -- JA_MethodDecl :      (List Modifier) -> (List TypeParam) -> (Maybe Type) -> Ident -> (List FormalParam) -> (List ExceptionType) -> (Maybe Exp) -> MethodBody -> MemberDecl
-    pretty (JA_MethodDecl _ _ _ _ _ _ _ _) = todo "JA_MethodDecl"
+    prettyPrec _ (JA_MethodDecl _ _ _ _ _ _ _ _) = todo "JA_MethodDecl"
     -- JA_ConstructorDecl : (List Modifier) -> (List TypeParam)                 -> Ident -> (List FormalParam) -> (List ExceptionType) -> ConstructorBody -> MemberDecl
-    pretty (JA_ConstructorDecl _ _ _ _ _ _) = todo "JA_ConstructorDecl"
+    prettyPrec _ (JA_ConstructorDecl _ _ _ _ _ _) = todo "JA_ConstructorDecl"
     -- JA_MemberClassDecl : ClassDecl -> MemberDecl
-    pretty (JA_MemberClassDecl _) = todo "JA_MemberClassDecl"
+    prettyPrec _ (JA_MemberClassDecl _) = todo "JA_MemberClassDecl"
     -- JA_MemberInterfaceDecl : InterfaceDecl -> MemberDecl
-    pretty (JA_MemberInterfaceDecl _) = todo "JA_MemberInterfaceDecl"
+    prettyPrec _ (JA_MemberInterfaceDecl _) = todo "JA_MemberInterfaceDecl"
 
 implementation Pretty Decl where
     -- = JA_MemberDecl MemberDecl
-    pretty (JA_MemberDecl memberDecl) = pretty memberDecl
+    prettyPrec _ (JA_MemberDecl memberDecl) = prettyPrec App memberDecl
     -- | JA_InitDecl Bool Block
-    pretty (JA_InitDecl fixme block) = todo "JA_InitDecl"
+    prettyPrec _ (JA_InitDecl fixme block) = todo "JA_InitDecl"
 
 ------------------------------------------------------------------------------------------------------------------------
 
 implementation Pretty NormalAnnotation where
-    pretty _ = todo "NormalAnnotation"
+    prettyPrec _ _ = todo "NormalAnnotation"
 
 implementation Pretty SingleElementAnnotation where
-    pretty _ = todo "SingleElementAnnotation"
+    prettyPrec _ _ = todo "SingleElementAnnotation"
 
 implementation Pretty MarkerAnnotation where
-    pretty (MkMarkerAnnotation name) = "@" <+> pretty name
+    prettyPrec _ (MkMarkerAnnotation name) = "@" <+> prettyPrec App name
 
 implementation Pretty Annotation where
-    pretty (JA_NormalAnnotation x)          = pretty x
-    pretty (JA_SingleElementAnnotation x)   = pretty x
-    pretty (JA_MarkerAnnotation x)          = pretty x
+    prettyPrec _ (JA_NormalAnnotation x)          = prettyPrec App x
+    prettyPrec _ (JA_SingleElementAnnotation x)   = prettyPrec App x
+    prettyPrec _ (JA_MarkerAnnotation x)          = prettyPrec App x
 
 ------------------------------------------------------------------------------------------------------------------------
 
@@ -177,16 +188,13 @@ defaultOpts = Opts 120
 
 export
 prettyPrint : CompilationUnit -> IO ()
-prettyPrint cu = putStrLn $ fromMaybe "ERROR" $ Doc.render defaultOpts $ pretty $ cu
+prettyPrint cu = putStrLn $ Doc.render defaultOpts $ prettyPrec App $ cu
 
 ------------------------------------------------------------------------------------------------------------------------
 -- debug only
 
 -- render : (opts : _) -> Doc opts -> Maybe String
 -- render opts (MkDoc xs) = map render $ shortest $ filter (visible opts) xs
-
-implementation Pretty String where
-    pretty = text
 
 export
 doc : Doc Pretty.defaultOpts -> Doc Pretty.defaultOpts
@@ -197,8 +205,8 @@ exampleDoc : Doc Pretty.defaultOpts
 -- exampleDoc = vcat (indent 4 $ fromString "a") (fromString "b")
 -- exampleDoc = "blah" <+> vcatList ["{", indentDefault "a", "}"]
 -- exampleDoc = "a" <+> "b"
-exampleDoc = (hsepBy ", " $ map pretty ["a", "b"]) <+> ";"
+exampleDoc = (hsepBy ", " $ map (prettyPrec App) ["a", "b"]) <+> ";"
 
 export
 putdoc : Doc Pretty.defaultOpts -> IO ()
-putdoc = putStrLn . fromMaybe "ERROR" . Doc.render defaultOpts
+putdoc = putStrLn . Doc.render defaultOpts
