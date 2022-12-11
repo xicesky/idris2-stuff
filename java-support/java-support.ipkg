@@ -2,7 +2,7 @@ package java-support
 
 authors     = "Markus Dangl"
 brief       = "java definitions for code generation"
-version     = 0.0.1
+version     = 0.0.2
 
 -- the Idris2 version required (e.g. langversion >= 0.5.1)
 --langversion >= 0.5.1
@@ -18,10 +18,10 @@ sourcedir   = "src/main/idris2"
 builddir    = "target"
 outputdir   = "target"
 
-depends = base          >= 0.5.1
-        , contrib       >= 0.5.1
-        , elab-util     >= 0.5.0
-        , sop           >= 0.5.0
+depends = base          >= 0.6.0
+        , contrib       >= 0.6.0
+        , elab-util     >= 0.6.0
+        , sop           >= 0.6.0
         , prettier      >= 0
 
 modules = Language.Java.AST.Types
