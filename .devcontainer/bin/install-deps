@@ -1,0 +1,6 @@
+#!/bin/bash
+
+while read -rd "" ipkg ; do
+    echo pack install-deps "$ipkg"
+    pack install-deps "$ipkg" || exit $?
+done < <(find-ipkgs -print0)

@@ -6,6 +6,6 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 
 COPY scripts/*.sh /tmp/scripts/
 RUN /bin/bash /tmp/scripts/install-grml-zsh.sh
-COPY bin/*.sh /home/vscode/bin/
+COPY bin/* /home/vscode/bin/
 COPY .zshrc /home/vscode
 RUN chown -R vscode: /home/vscode

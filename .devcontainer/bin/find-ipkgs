@@ -1,0 +1,10 @@
+#!/bin/bash
+
+declare -a FINDARGS=( "$@" )
+if [[ "${#FINDARGS[@]}" -eq 0 ]] ; then
+    FINDARGS=( -print )
+fi
+
+find . \
+    -mindepth 1 \( -iname "_*" -o -type d -iname ".*" \) -prune \
+    -o \( -iname "*.ipkg" "${FINDARGS[@]}" \)

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+find "$(pack package-path)" -iname "*.idr" \
+    -exec grep -iPe "$1" {} +
