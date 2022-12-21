@@ -16,7 +16,6 @@ langversion >= 0.6.0
 -- "maven-like" layout
 sourcedir   = "src/main/idris2"
 builddir    = "target"
-outputdir   = "target"
 
 depends = base          >= 0.6.0
         , idris2        >= 0.6.0

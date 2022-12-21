@@ -1,4 +1,5 @@
 #!/bin/bash
 
 clear
-rlwrap -P ':module Repl' idris2 --repl "$(find . -maxdepth 1 -iname "*.ipkg" | head -n 1)"
+ipkg="$(find . -maxdepth 1 -iname "*.ipkg" -printf '%f\n' | head -n 1)"
+pack --with-ipkg "$ipkg" repl src/main/idris2/Repl.idr

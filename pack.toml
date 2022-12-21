@@ -1,0 +1,14 @@
+[custom.all.example-module]
+type = "local"
+path = "./example-module"
+ipkg = "example-module.ipkg"
+
+[custom.all.java-support]
+type = "local"
+path = "./java-support"
+ipkg = "java-support.ipkg"
+
+[custom.all.java-backend]
+type = "local"
+path = "./java-backend"
+ipkg = "java-backend.ipkg"
