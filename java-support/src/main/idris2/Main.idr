@@ -9,6 +9,7 @@ import Language.Java.Pretty
 
 %default partial
 
+export
 exampleClass : CompilationUnit
 exampleClass = java_class
     (className ["net","q1cc","sky","Example"])
@@ -19,6 +20,7 @@ exampleClass = java_class
 
 ------------------------------------------------------------------------------------------------------------------------
 
+export
 main : IO ()
 main = do
     prettyPrint exampleClass
