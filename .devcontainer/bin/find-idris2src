@@ -1,4 +1,5 @@
 #!/bin/bash
 
-find "$(pack package-path)" -iname "*.idr" \
+cd "$(pack libs-path)/.."
+find . -iname "*.idr" \
     -exec grep -iPe "$1" {} +
