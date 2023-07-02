@@ -1,19 +1,19 @@
 = idris2-stuff
+:experimental:
 :source-highlighter: rouge
 :source-language: shell
 :icons: font
-:toc: left
+:toc: true
 :sectanchors:
 :star: *
 Markus Dangl <663399+xicesky@users.noreply.github.com>
 
-== Launch in devcontainer
+== Development
 
-See https://github.com/microsoft/vscode-dev-containers
+Requirements:
 
-FIXME: image:https://img.shields.io/static/v1?label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode[link=https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/microsoft/vscode-remote-try-python,title="Open in Remote - Containers"]
-
-== Checkout and build dependencies
+* https://pre-commit.com/[pre-commit] (optional), install e.g. using `pip install pre-commit`
+* Visual Studio Code recommended
 
 This project uses the following library dependencies:
 
@@ -21,17 +21,29 @@ This project uses the following library dependencies:
 * https://github.com/stefan-hoeck/idris2-sop
 * https://github.com/Z-snails/prettier
 
-Since we don't have any dependecy-management yet, they are currently managed via shell script:
-
-[source,bash]
+[source,console]
 ----
-pushd dependencies && ./checkout.sh && ./build-and-install.sh && popd
+$ git clone git@github.com:xicesky/idris2-stuff.git
+$ cd idris2-stuff
+$ pre-commit install
+
+Run main program:
+$ cd java-support
+$ ./run.sh
+
 ----
 
-== Run main
+=== Launch in devcontainer
 
-[source,bash]
+See https://github.com/microsoft/vscode-dev-containers
+
+FIXME: image:https://img.shields.io/static/v1?label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode[link=https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/microsoft/vscode-remote-try-python,title="Open in Remote - Containers"]
+
+=== Maintenace
+
 ----
-cd java-support
-./run.sh
+Also, update pre-commit hooks from time to time:
+$ pre-commit autoupdate
+$ pre-commit run --all-files
+$ git add -A && git commit -m "Update pre-commit hooks"
 ----

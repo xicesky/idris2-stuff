@@ -32,8 +32,9 @@ data Op = JA_Mult | JA_Div | JA_Rem | JA_Add | JA_Sub | JA_LShift | JA_RShift | 
 
 ||| An assignment operator.
 public export
-data AssignOp = JA_EqualA | JA_MultA | JA_DivA | JA_RemA | JA_AddA | JA_SubA
-              | JA_LShiftA | JA_RShiftA | JA_RRShiftA | JA_AndA | JA_XorA | JA_OrA
+data AssignOp
+    = JA_EqualA | JA_MultA | JA_DivA | JA_RemA | JA_AddA | JA_SubA
+    | JA_LShiftA | JA_RShiftA | JA_RRShiftA | JA_AndA | JA_XorA | JA_OrA
 
 ------------------------------------------------------------------------------------------------------------------------
 
@@ -60,18 +61,18 @@ data Modifier
     | JA_Synchronized_
 
 Show Modifier where
-   show JA_Public = "public"
-   show JA_Private = "private"
-   show JA_Protected = "protected"
-   show JA_Abstract = "abstract"
-   show JA_Final = "final"
-   show JA_Static = "static"
-   show JA_StrictFP = "strictfp"
-   show JA_Transient = "transient"
-   show JA_Volatile = "volatile"
-   show JA_Native = "native"
-   show (JA_Annotation a) = "annotation" -- FIXME show a
-   show JA_Synchronized_ = "synchronized"
+    show JA_Public = "public"
+    show JA_Private = "private"
+    show JA_Protected = "protected"
+    show JA_Abstract = "abstract"
+    show JA_Final = "final"
+    show JA_Static = "static"
+    show JA_StrictFP = "strictfp"
+    show JA_Transient = "transient"
+    show JA_Volatile = "volatile"
+    show JA_Native = "native"
+    show (JA_Annotation a) = "annotation" -- FIXME show a
+    show JA_Synchronized_ = "synchronized"
 
 ------------------------------------------------------------------------------------------------------------------------
 
@@ -127,9 +128,9 @@ data Lhs
 -- ¦ A lambda parameter can be a single parameter, or mulitple formal or mulitple inferred parameters
 public export
 data LambdaParams
-  = JA_LambdaSingleParam Ident
-  | JA_LambdaFormalParams (List FormalParam)
-  | JA_LambdaInferredParams (List Ident)
+    = JA_LambdaSingleParam Ident
+    | JA_LambdaFormalParams (List FormalParam)
+    | JA_LambdaInferredParams (List Ident)
 
 ||| Lambda expression, starting from java 8
 public export
