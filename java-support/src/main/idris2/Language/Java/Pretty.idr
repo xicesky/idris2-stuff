@@ -146,8 +146,16 @@ implementation Pretty CompilationUnit where
         , vsepBy empty (map (prettyPrec App) typedecls) --indentDefault $ vsepBy empty [fromString "impl"]
         ]
 
+export
+implementation Pretty (List TypeParam) where
+    prettyPrec _ [] = empty
+    prettyPrec _ list = (todo "TypeParam")
+
 ------------------------------------------------------------------------------------------------------------------------
 -- Decl
+
+-- Forward declarations
+implementation Pretty BlockStmt
 
 export
 implementation Pretty VarDeclId where
@@ -164,13 +172,33 @@ implementation Pretty VarDecl where
     prettyPrec _ (JA_VarDecl varDeclId maybeInit) = sep [prettyPrec App varDeclId, fromMaybe "" (map (prettyPrec App) maybeInit)]
 
 export
+implementation Pretty FormalParam where
+    -- JA_FormalParam (List Modifier) Type Bool VarDeclId
+    prettyPrec _ (JA_FormalParam modifiers typ False varDeclId) = sep [prettyModifiers App modifiers, prettyPrec App typ, prettyPrec App varDeclId]
+    prettyPrec _ (JA_FormalParam modifiers typ True varDeclId)  = todo "varargs"
+
+export
+implementation Pretty ConstructorBody where
+    -- JA_ConstructorBody (Maybe ExplConstrInv) (List BlockStmt)
+    prettyPrec _ (JA_ConstructorBody maybeExplConstrInv statements) = vcatList $ map (prettyPrec App) statements
+
+export
 implementation Pretty MemberDecl where
     -- JA_FieldDecl : (List Modifier) -> JavaType -> (List VarDecl) -> MemberDecl
     prettyPrec _ (JA_FieldDecl modifiers typ vardecl) = sep [prettyModifiers App modifiers, prettyPrec App typ, hsepBy ", " $ map (prettyPrec App) vardecl] <+> ";"
     -- JA_MethodDecl :      (List Modifier) -> (List TypeParam) -> (Maybe Type) -> Ident -> (List FormalParam) -> (List ExceptionType) -> (Maybe Exp) -> MethodBody -> MemberDecl
     prettyPrec _ (JA_MethodDecl _ _ _ _ _ _ _ _) = todo "JA_MethodDecl"
     -- JA_ConstructorDecl : (List Modifier) -> (List TypeParam)                 -> Ident -> (List FormalParam) -> (List ExceptionType) -> ConstructorBody -> MemberDecl
-    prettyPrec _ (JA_ConstructorDecl _ _ _ _ _ _) = todo "JA_ConstructorDecl"
+    prettyPrec _ (JA_ConstructorDecl modifiers typeParams ident params exceptions body) = jbraces
+        (sep
+            [ prettyModifiers App modifiers
+            , prettyPrec App typeParams
+            , prettyPrec App ident
+            , parens $ hsepBy ", " $ map (prettyPrec App) params
+            , todo "exceptions"
+            ]
+        )
+        (prettyPrec App body)
     -- JA_MemberClassDecl : ClassDecl -> MemberDecl
     prettyPrec _ (JA_MemberClassDecl _) = todo "JA_MemberClassDecl"
     -- JA_MemberInterfaceDecl : InterfaceDecl -> MemberDecl
@@ -182,6 +210,36 @@ implementation Pretty Decl where
     prettyPrec _ (JA_MemberDecl memberDecl) = prettyPrec App memberDecl
     -- | JA_InitDecl Bool Block
     prettyPrec _ (JA_InitDecl fixme block) = todo "JA_InitDecl"
+
+------------------------------------------------------------------------------------------------------------------------
+-- Statements
+
+-- Forward declarations
+implementation Pretty Block
+
+export
+implementation Pretty Stmt where
+    -- JA_StmtBlock : Block -> Stmt
+    -- TODO: Uncomment this and die to red squiggly line exposure (bc totality of prettyPrec cannot be auto-proven anymore)
+    -- prettyPrec prec (JA_StmtBlock block)    = prettyPrec App block <+> ";"
+    prettyPrec _    (JA_Empty)              = empty <+> ";"
+    prettyPrec _    (JA_ExpStmt expr)       = todo "JA_ExpStmt" <+> ";"
+    prettyPrec _    _                       = todo "Stmt unknown" <+> ";"
+
+export
+implementation Pretty BlockStmt where
+    -- = JA_BlockStmt Stmt
+    prettyPrec _ (JA_BlockStmt stmt) = prettyPrec App stmt
+
+    -- | JA_LocalClass ClassDecl
+    prettyPrec _ (JA_LocalClass classDecl) = todo "JA_LocalClass"
+    -- | JA_LocalVars (List Modifier) Type (List VarDecl)
+    prettyPrec _ (JA_LocalVars modifiers typ varDecls) = todo "JA_LocalVars"
+
+export
+implementation Pretty Block where
+    -- JA_Block (List BlockStmt)
+    prettyPrec _ (JA_Block statements) = jbraces empty $ vcatList $ map (prettyPrec App) statements
 
 ------------------------------------------------------------------------------------------------------------------------
 

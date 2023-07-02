@@ -10,11 +10,20 @@ import Language.Java.Pretty
 %default partial
 
 export
+examplePackage : List String
+examplePackage = ["net","q1cc","sky"]
+
+export
 exampleClass : CompilationUnit
 exampleClass = java_class
-    (className ["net","q1cc","sky","Example"])
+    (className examplePackage "Example")
     (JA_ClassBody
-        [ JA_MemberDecl (JA_FieldDecl [JA_Public] (JA_PrimType JA_IntT) [JA_VarDecl (JA_VarId (JA_Ident "x")) Nothing])
+        [ private_field java_int (JA_Ident "x") Nothing
+        , private_field java_double (JA_Ident "y") Nothing
+        , public_constructor (JA_Ident "dummy")
+            [ JA_BlockStmt $ JA_Empty
+            , JA_BlockStmt $ JA_ExpStmt $ JA_Assign (JA_NameLhs $ java_name ["x"]) JA_EqualA (JA_Lit $ JA_Int 3)
+            ]
         ]
     )
 

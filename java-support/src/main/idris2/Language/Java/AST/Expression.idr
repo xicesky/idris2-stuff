@@ -7,9 +7,6 @@ import Language.Java.AST.Types
 
 %default total
 
--- FIXME: License?
--- Partially from https://github.com/vincenthz/language-java
-
 ------------------------------------------------------------------------------------------------------------------------
 
 ||| A literal denotes a fixed, unchanging value.
@@ -105,7 +102,7 @@ data VarDecl
 ||| for a given declaration may be marked as variable arity,
 ||| indicated by the boolean argument.
 public export
-data FormalParam = JA_FormalParam (List Modifier) Type Bool VarDeclId
+data FormalParam = JA_FormalParam (List Modifier) JavaType Bool VarDeclId
 
 ||| Arguments to methods and constructors are expressions.
 export
@@ -232,9 +229,6 @@ data FieldAccess
 
 ------------------------------------------------------------------------------------------------------------------------
 -- TODO
-
-
-
 
 -- Forward declarations
 data TypeDecl : Type
