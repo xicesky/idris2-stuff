@@ -152,10 +152,72 @@ implementation Pretty (List TypeParam) where
     prettyPrec _ list = (todo "TypeParam")
 
 ------------------------------------------------------------------------------------------------------------------------
+-- Statements
+
+-- Forward declarations
+--implementation Pretty Block
+prettyStmt : {a : Type} -> {opts : _} -> Prec -> a -> Doc opts
+
+-- Ad-hoc polymorphic function for pretty-printing statements
+-- This avoids problems proving the totality of prettyPrec
+--prettyStmt : {a : Type} -> {opts : _} -> Prec -> a -> Doc opts
+-- = JA_BlockStmt Stmt
+prettyStmt {a=BlockStmt} prec (JA_BlockStmt stmt)                   = prettyStmt prec (assert_smaller (JA_BlockStmt stmt) stmt)
+-- | JA_LocalClass ClassDecl
+prettyStmt {a=BlockStmt} prec (JA_LocalClass stmt)                  = todo "JA_LocalClass"
+-- | JA_LocalVars (List Modifier) Type (List VarDecl)
+prettyStmt {a=BlockStmt} prec (JA_LocalVars modifiers typ varDecls) = todo "JA_LocalVars"
+
+-- JA_StmtBlock : Block -> Stmt
+prettyStmt {a=Stmt} prec (JA_StmtBlock block)   = prettyStmt App (assert_smaller (JA_StmtBlock block) block) <+> ";"
+-- JA_Empty : Stmt
+prettyStmt {a=Stmt} prec (JA_Empty)             = empty <+> ";"
+-- JA_ExpStmt : Exp -> Stmt
+prettyStmt {a=Stmt} prec (JA_ExpStmt stmt)      = todo "JA_ExpStmt" <+> ";"
+-- Fallback: TODO
+prettyStmt {a=Stmt} _    _                      = todo "Stmt unknown" <+> ";"
+
+-- JA_Block (List BlockStmt)
+prettyStmt {a=Block} _ (JA_Block statements)    = jbraces empty $ prettyStmt App statements
+prettyStmt {a=List BlockStmt} _ statements      = vcatList $ map prettySingleStmt statements where
+    -- Workaround for totality checker not working well with `map`
+    prettySingleStmt : {opts : _} -> BlockStmt -> Doc opts
+    prettySingleStmt x = prettyStmt App (assert_smaller statements x)
+
+
+-- Fallback: Error
+prettyStmt {a=_} _ _ = todo "ERROR: Invalid type to prettyStmt"
+
+-- export
+-- implementation Pretty Stmt where
+--     -- JA_StmtBlock : Block -> Stmt
+--     -- TODO: Uncomment this and die to red squiggly line exposure (bc totality of prettyPrec cannot be auto-proven anymore)
+--     -- prettyPrec prec (JA_StmtBlock block)    = prettyPrec App block <+> ";"
+--     prettyPrec _    (JA_Empty)              = empty <+> ";"
+--     prettyPrec _    (JA_ExpStmt expr)       = todo "JA_ExpStmt" <+> ";"
+--     prettyPrec _    _                       = todo "Stmt unknown" <+> ";"
+
+-- export
+-- implementation Pretty BlockStmt where
+--     -- = JA_BlockStmt Stmt
+--     prettyPrec _ (JA_BlockStmt stmt) = prettyPrec App stmt
+
+--     -- | JA_LocalClass ClassDecl
+--     prettyPrec _ (JA_LocalClass classDecl) = todo "JA_LocalClass"
+--     -- | JA_LocalVars (List Modifier) Type (List VarDecl)
+--     prettyPrec _ (JA_LocalVars modifiers typ varDecls) = todo "JA_LocalVars"
+
+-- export
+-- implementation Pretty Block where
+--     -- JA_Block (List BlockStmt)
+--     prettyPrec _ (JA_Block statements) = jbraces empty $ vcatList $ map (prettyPrec App) statements
+
+------------------------------------------------------------------------------------------------------------------------
 -- Decl
 
 -- Forward declarations
-implementation Pretty BlockStmt
+--implementation Pretty BlockStmt
+-- prettyStmt : {a : Type} -> {opts : _} -> Prec -> a -> Doc opts
 
 export
 implementation Pretty VarDeclId where
@@ -180,7 +242,7 @@ implementation Pretty FormalParam where
 export
 implementation Pretty ConstructorBody where
     -- JA_ConstructorBody (Maybe ExplConstrInv) (List BlockStmt)
-    prettyPrec _ (JA_ConstructorBody maybeExplConstrInv statements) = vcatList $ map (prettyPrec App) statements
+    prettyPrec _ (JA_ConstructorBody maybeExplConstrInv statements) = vcatList $ map (prettyStmt App) statements
 
 export
 implementation Pretty MemberDecl where
@@ -210,36 +272,6 @@ implementation Pretty Decl where
     prettyPrec _ (JA_MemberDecl memberDecl) = prettyPrec App memberDecl
     -- | JA_InitDecl Bool Block
     prettyPrec _ (JA_InitDecl fixme block) = todo "JA_InitDecl"
-
-------------------------------------------------------------------------------------------------------------------------
--- Statements
-
--- Forward declarations
-implementation Pretty Block
-
-export
-implementation Pretty Stmt where
-    -- JA_StmtBlock : Block -> Stmt
-    -- TODO: Uncomment this and die to red squiggly line exposure (bc totality of prettyPrec cannot be auto-proven anymore)
-    -- prettyPrec prec (JA_StmtBlock block)    = prettyPrec App block <+> ";"
-    prettyPrec _    (JA_Empty)              = empty <+> ";"
-    prettyPrec _    (JA_ExpStmt expr)       = todo "JA_ExpStmt" <+> ";"
-    prettyPrec _    _                       = todo "Stmt unknown" <+> ";"
-
-export
-implementation Pretty BlockStmt where
-    -- = JA_BlockStmt Stmt
-    prettyPrec _ (JA_BlockStmt stmt) = prettyPrec App stmt
-
-    -- | JA_LocalClass ClassDecl
-    prettyPrec _ (JA_LocalClass classDecl) = todo "JA_LocalClass"
-    -- | JA_LocalVars (List Modifier) Type (List VarDecl)
-    prettyPrec _ (JA_LocalVars modifiers typ varDecls) = todo "JA_LocalVars"
-
-export
-implementation Pretty Block where
-    -- JA_Block (List BlockStmt)
-    prettyPrec _ (JA_Block statements) = jbraces empty $ vcatList $ map (prettyPrec App) statements
 
 ------------------------------------------------------------------------------------------------------------------------
 
